@@ -1019,7 +1019,7 @@ function renderAnomaly(bodyId, infoId, keyName, label, minDiff, d) {
   });
   if (!changes.length) { body.innerHTML = '<div class="an-empty">最少2天数据且变动 ≥ ' + minDiff + ' 条记录</div>'; return; }
   const rise = changes.filter(c => c.diff > 0).sort((a, b) => b.diff - a.diff).slice(0, 5);
-  const fall = changes.filter(c => c.diff < 0).sort((a, b) => a.diff - b.diff).slice(0, 5);
+  const fall = changes.filter(c => c.diff < 0).sort((a, b) => a.diff - b.diff).slice(0, 5).sort((a, b) => b.diff - a.diff);
   const row = (c, cls) => '<tr><td>' + esc(c.name) + '</td><td>' + Math.round(c.prev) + '</td><td>' + Math.round(c.curr) + '</td>' +
     '<td class="' + cls + '">' + (cls === 'up' ? '+' : '') + Math.round(c.diff) + '</td>' +
     '<td class="' + cls + '">' + (cls === 'up' ? '+' : '') + Math.round(c.pct) + '%</td></tr>';
