@@ -275,7 +275,7 @@ textarea:focus{ outline:none; border-color:var(--primary); }
         <div class="fg"><select id="fOp" onchange="onOpChange()"></select></div>
         <div class="fg"><select id="fMedia" onchange="render()"></select></div>
         <button class="btn" onclick="resetFilters()">重置</button>
-        <button class="btn primary" onclick="openImport()">＋ 导入数据</button>
+        <button class="btn primary" id="btnImport" onclick="openImport()">＋ 导入数据</button>
       </div>
     </div>
 
@@ -1394,7 +1394,17 @@ function exportDataJs() {
 }
 
 /* ================= 启动 ================= */
+/* 导入按钮仅本地/管理员可见：
+   - file:// 打开（本机使用）→ 显示
+   - 线上链接追加 ?admin=1 → 显示
+   - 普通线上访问 → 隐藏（分享出去的人看不到导入入口，数据只读） */
+function applyImportVisibility() {
+  const admin = location.protocol === 'file:' || /[?&]admin=1/.test(location.search);
+  const b = document.getElementById('btnImport');
+  if (b) b.style.display = admin ? '' : 'none';
+}
 function boot() {
+  applyImportVisibility();
   buildData();
   if (!DATA.length) {
     document.getElementById('kpis').innerHTML = '<div class="kpi-row"><div class="kpi" style="grid-column:1/-1">未加载到数据：请确认同目录下存在 data.js</div></div>';
@@ -1418,7 +1428,7 @@ function applyHash() {
   if (p.month !== undefined) { state.month = p.month; state.from = ''; state.to = ''; reDates = true; }
   if (p.from !== undefined) { state.from = p.from; reDates = true; }
   if (p.to !== undefined) { state.to = p.to; reDates = true; }
-  if (p.view === 'import') setTimeout(openImport, 200);
+  if (p.view === 'import' && document.getElementById('btnImport').style.display !== 'none') setTimeout(openImport, 200);
   buildSidebar();
   if (reDates) {
     populateDates(); populateOps();
