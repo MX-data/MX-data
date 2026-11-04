@@ -971,8 +971,16 @@ function renderRankTable(wrapId, keyName, purple, topN, d) {
 function renderTrend5(d) {
   const wrap = document.getElementById('cTrend5');
   const empty = document.getElementById('cTrend5Empty');
-  const dates = uniq(d.map(r => r.日期)).sort().slice(-5);
-  if (dates.length < 2) { destroyChart('trend5'); wrap.style.display = 'none'; empty.style.display = 'block'; return; }
+  // 以全局导入的最新日期为终点，固定取最近 5 个自然日（10.31 ~ 11.3 这种）
+  const allDates = uniq(DATA.map(r => r.日期)).sort();
+  const last = allDates[allDates.length - 1];
+  if (!last) { destroyChart('trend5'); wrap.style.display = 'none'; empty.style.display = 'block'; return; }
+  const dates = [];
+  for (let i = 4; i >= 0; i--) {
+    const dt = new Date(last + 'T00:00:00');
+    dt.setDate(dt.getDate() - i);
+    dates.push(localISO(dt));
+  }
   wrap.style.display = ''; empty.style.display = 'none';
   const per = new Map();
   d.forEach(r => per.set(r.日期, (per.get(r.日期) || 0) + r.消耗));
